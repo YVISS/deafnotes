@@ -2,8 +2,8 @@
 import Webcam from "react-webcam";
 import Image from "next/image";
 import { useRef, useState, useCallback } from "react";
-import { supabase } from "@/utils/supabaseClient";
-import { dataURLtoFile } from "@/utils/UrltoFile/dataURLtoFile";
+import { supabase } from "@/utils/supabase/supabaseClient";
+import dataURLtoFile from "@/utils/UrltoFile/dataURLtoFile";
 
 export default function CameraComp() {
   const webRef = useRef(null);
@@ -30,7 +30,7 @@ export default function CameraComp() {
     const file = dataURLtoFile(imgSrc, `photo_${Date.now()}.jpg`);
     // 'photos' is your bucket name; adjust path/filename as needed
     const { data, error } = await supabase.storage
-      .from("photos")
+      .from("webcam-images")
       .upload(`webcam-photos/${file.name}`, file, {
         cacheControl: "3600",
         upsert: false,
@@ -42,16 +42,16 @@ export default function CameraComp() {
     } else {
       // You can now construct a public URL or get a signed URL
       const publicUrl = supabase.storage
-        .from("photos")
+        .from("webcam-images")
         .getPublicUrl(`webcam-photos/${file.name}`).data.publicUrl;
       setUploadedUrl(publicUrl);
     }
   };
 
   return (
-    <section className="flex flex-col items-center">
+    <section className="flex flex-col items-center justify-center">
       <Webcam
-        className="w-full"
+        className=""
         audio={false}
         ref={webRef}
         screenshotFormat="image/jpeg"
@@ -65,7 +65,7 @@ export default function CameraComp() {
       />
       <button onClick={capture}>Take Photo</button>
       {imgSrc && (
-        <div>
+        <div className="flex flex-col items-center justify-center">
           <Image
             src={imgSrc}
             alt="Screenshot"
@@ -75,7 +75,7 @@ export default function CameraComp() {
           <button
             onClick={uploadToSupabase}
             disabled={loading}
-            className="mt-2 bg-green-500 text-white px-4 py-2 rounded"
+            className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-200 hover:text-green-800 duration-300 ease-in-out"
           >
             {loading ? "Uploading..." : "Upload to Supabase"}
           </button>

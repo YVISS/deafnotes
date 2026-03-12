@@ -1,5 +1,4 @@
-// utils/dataUrlToFile.js
-export default dataURLtoFile(dataurl, filename) {
+export default function dataURLtoFile(dataurl, filename) {
   const arr = dataurl.split(",");
   const mime = arr[0].match(/:(.*?);/)[1];
   const bstr = atob(arr[1]);
